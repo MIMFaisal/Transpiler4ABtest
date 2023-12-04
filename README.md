@@ -24,7 +24,7 @@ npm run build
 
 Copy below code in your UserJS/TemperMonkey
 
-### No socket
+### Snippet for live update
 
 ```
 // ==UserScript==
@@ -80,6 +80,8 @@ Copy below code in your UserJS/TemperMonkey
         .catch((err) => {
           console.debug('Failed to establish connection to http://localhost:3030/');
         });
+    } else {
+      setTimeout(poll, 25);
     }
   }());
 })();
