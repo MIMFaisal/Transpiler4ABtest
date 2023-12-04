@@ -1,0 +1,18 @@
+@import './components/info';
+@import './components/mixin';
+
+.#{$ID} {
+  &-content {
+    background: red;
+  }
+}
+
+body {
+  background: red;
+  background: green;
+
+  div {
+    background: red;
+    background: green;
+  }
+}
