@@ -12,7 +12,7 @@ function startExp() {
 }
 
 if (process.argv.includes('prev')) {
-  if (fse.pathExistsSync('./activeExp.js')) {
+  if (fse.pathExistsSync('./process/activeExp.js')) {
     startExp();
   } else {
     console.log('No previous active experiment found');
