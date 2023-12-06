@@ -9,9 +9,9 @@ import siteLinks from '../process/siteLinks.js';
 const sourcePath = `./src/${SITE}/${ID}/${VAR}`;
 
 async function serve() {
-  let ctx = await esbuild.context({
+  const ctx = await esbuild.context({
     entryPoints: [`${sourcePath}/index.js`, `${sourcePath}/scss/index.scss`],
-    entryNames: `index`,
+    entryNames: 'index',
     outdir: 'www',
     bundle: true,
     minify: false,
@@ -25,24 +25,23 @@ async function serve() {
       })
     ],
     treeShaking: true,
-    charset: 'utf8',
-  })
+    charset: 'utf8'
+  });
 
   await ctx.watch();
-  
-  let { host, port } = await ctx.serve({
+
+  const { host, port } = await ctx.serve({
     servedir: 'www',
     host: 'localhost',
     port: 3030
-  })
+  });
 
   console.log(`Serving on ${host}:${port}`);
 
-  if(siteLinks[SITE]) {
+  if (siteLinks[SITE]) {
     console.log(`Redirecting to site... ${siteLinks[SITE]}`);
     open(siteLinks[SITE]);
   }
-
 }
 
 serve();

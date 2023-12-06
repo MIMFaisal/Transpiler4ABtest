@@ -42,7 +42,7 @@ if (process.argv.includes('prev')) {
     console.log(`Creating New Experiment: ${clientId}-${expId}_${varId}`);
     fse.copySync('./template', `./src/${clientId}/${expId}/${varId}/`);
     createFile('./process/activeExp.js', sharedJsContent(clientId, expId, varId));
-    createFile(`./src/${clientId}/${expId}/${varId}/info.js`, sharedJsContent(clientId, expId, varId));
+    createFile(`./src/${clientId}/${expId}/${varId}/info.js`, `${sharedJsContent(clientId, expId, varId)}export const EXPID = '${clientId}-${expId}';\n\nexport function expLog() {\n  window.runningExperiments[EXPID].logs.push([...arguments]);\n  console.debug(...arguments);\n}`);
     createFile(`./src/${clientId}/${expId}/${varId}/scss/components/_info.scss`, `$ID: '${clientId}-${expId}';\n$variation-name: '${varId}';`);
   } else {
     createFile('./process/activeExp.js', sharedJsContent(clientId, expId, varId));
