@@ -4,7 +4,6 @@ import inquirer from 'inquirer';
 import fse from 'fs-extra';
 import fuzzy from 'fuzzy';
 import siteLinks from './siteLinks.js';
-// import fs from 'fs';
 
 function getFiles(dir, files = []) {
   const fileList = fse.existsSync(dir) ? fse.readdirSync(dir) : [];
