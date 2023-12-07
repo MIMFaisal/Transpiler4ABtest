@@ -4,6 +4,7 @@ procss/siteLinks.js
 procss/activeExp.js
 **/build
 www
+src
 
 # local env files
 .env

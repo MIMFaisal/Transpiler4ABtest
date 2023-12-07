@@ -1,48 +1,115 @@
-import autocomplete from 'inquirer-autocomplete-standalone';
+/* eslint-disable */
+import inquirerPrompt from 'inquirer-autocomplete-prompt';
+import inquirer from 'inquirer';
+import fse from 'fs-extra';
 import fuzzy from 'fuzzy';
-import fs from 'fs';
+import siteLinks from './siteLinks.js';
+// import fs from 'fs';
 
 function getFiles(dir, files = []) {
-  const fileList = fs.readdirSync(dir);
+  const fileList = fse.existsSync(dir) ? fse.readdirSync(dir) : [];
   fileList.forEach((file) => {
     const name = `${dir}/${file}`;
-    if (fs.statSync(name).isDirectory()) {
+    if (fse.statSync(name).isDirectory()) {
       files.push(file);
     }
   });
   return files;
 }
-function fileResolver(target, path) {
-  if (fs.existsSync(path)) {
-    return getFiles(path);
-  }
-  fs.mkdirSync(path);
-  return [];
-}
-async function createPrompt(message, choiceList, newItem) {
-  let mathces = [];
-  const isSuggestOnly = !newItem;
-  const emptyTextVal = !newItem && '';
-  const answer = await autocomplete({
-    message,
-    source: async (input) => {
-      const filteredList = fuzzy.filter(input, choiceList);
-      mathces = filteredList.map((el) => el.original);
+async function createPrompt() {
+  inquirer.registerPrompt('autocomplete', inquirerPrompt);
 
-      if (!input) {
-        mathces = [...choiceList];
-      }
-      newItem && mathces.push(`Create New ${newItem}`);
-      return mathces.map((choice) => ({
-        name: choice,
-        value: choice
-      }));
+  const testInfo = await inquirer.prompt([
+    {
+      type: 'autocomplete',
+      name: 'client',
+      message: 'Select a client:',
+      source: async (answersSoFar, input) => {
+        const filteredList = fuzzy.filter(input, getFiles('./src'));
+        let mathces = filteredList.map((el) => el.original);
+        if (!input) {
+          mathces = [...getFiles('./src')];
+        }
+        mathces.push('Create New Client');
+        return mathces.map((choice) => ({
+          name: choice,
+          value: choice
+        }));
+      },
+      when: () => getFiles('./src').length > 0
     },
-    suggestOnly: isSuggestOnly,
-    emptyText: emptyTextVal
-  });
+    {
+      type: 'input',
+      name: 'newClient',
+      message: 'Enter Client ID:',
+      when: (answers) => !answers.client || answers.client.includes('Create')
+    },
+    {
+      type: 'autocomplete',
+      name: 'experiment',
+      message: 'Select an experiment to run:',
+      source: async (answersSoFar, input) => {
+        const filteredList = fuzzy.filter(input, getFiles(`./src/${answersSoFar.newClient || answersSoFar.client}`));
+        let mathces = filteredList.map((el) => el.original);
 
-  return answer;
+        if (!input) {
+          mathces = [...getFiles(`./src/${answersSoFar.newClient || answersSoFar.client}`)];
+        }
+        mathces.push('Create New Experiment');
+        return mathces.map((choice) => ({
+          name: choice,
+          value: choice
+        }));
+      },
+      when: (answers) => !answers.newClient || (answers.newClient && getFiles(`./src/${answers.newClient}`).length)
+    },
+    {
+      type: 'input',
+      name: 'newExperiment',
+      message: 'Enter Experiment ID:',
+      when: (answers) => !answers.client || answers.client.includes('Create') || answers.experiment.includes('Create')
+    },
+    {
+      type: 'autocomplete',
+      name: 'variation',
+      message: 'Select an experiment to run:',
+      source: async (answersSoFar, input) => {
+        const filteredList = fuzzy.filter(input, getFiles(`./src/${answersSoFar.newClient || answersSoFar.client}/${answersSoFar.newExperiment || answersSoFar.experiment}`));
+        let matches = filteredList.map((el) => el.original);
+
+        if (!input) {
+          matches = [...getFiles(`./src/${answersSoFar.newClient || answersSoFar.client}/${answersSoFar.newExperiment || answersSoFar.experiment}`)];
+        }
+        matches.push('Create New Variation');
+        return matches.map((choice) => ({
+          name: choice,
+          value: choice
+        }));
+      },
+      when: (answers) => !answers.newExperiment || (answers.newExperiment && getFiles(`./src/${answers.newClient || answers.client}/${answers.newExperiment}`).length)
+    },
+    {
+      type: 'input',
+      name: 'newVariation',
+      message: 'Enter Variation ID:',
+      when: (answers) => answers.newExperiment || answers.variation.includes('Create')
+    },
+    {
+      type: 'input',
+      name: 'siteLink',
+      message: 'Paste Site Link Once to enable auto redirection or Press Enter to Continue:',
+      when: (answers) => !siteLinks[answers.newClient || answers.client]
+    }
+  ]);
+
+  const clientId = testInfo.newClient || testInfo.client;
+  const expId = testInfo.newExperiment || testInfo.experiment;
+  const varId = testInfo.newVariation || testInfo.variation;
+  const { siteLink } = testInfo;
+
+  return {
+    clientId, expId, varId, siteLink
+  };
 }
 
 const sharedJsContent = (siteName, experimentId, variationName) => `export const SITE = '${siteName}';
@@ -51,34 +118,16 @@ export const VAR = '${variationName}';
 `;
 
 const createFile = (location, content) => {
-  fs.writeFile(location, content, (err) => {
+  fse.writeFile(location, content, (err) => {
     if (err) {
       console.error('ERROR', err);
     }
   });
 };
 
-async function getIdValue(idName, list) {
-  let id = await createPrompt(`Select a ${idName}`, list, idName);
-
-  if (id.includes('Create')) {
-    console.log('==============================');
-    id = await createPrompt(`Enter ${idName} ID\n`, []);
-  }
-
-  return id;
-}
-
-async function getSiteLink() {
-  const siteLink = await createPrompt('Paste Site Link Once to enable auto redirection or Press Enter to Continue: \n', []);
-  return siteLink;
-}
-
 export {
   getFiles,
-  getIdValue,
   sharedJsContent,
   createFile,
-  fileResolver,
-  getSiteLink
+  createPrompt
 };
