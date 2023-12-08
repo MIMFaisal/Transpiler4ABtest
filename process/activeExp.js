@@ -1,3 +1,3 @@
 export const SITE = 'tst';
-export const ID = '101';
-export const VAR = '102';
+export const ID = '1';
+export const VAR = 'v1';
