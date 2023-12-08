@@ -26,7 +26,7 @@ if (process.argv.includes('prev')) {
   fse.ensureDirSync(`./src/${clientId}/${expId}/${varId}`);
 
   if (!fse.pathExistsSync(`./src/${clientId}/${expId}/${varId}/index.js`)) {
-    console.log('==============================');
+    console.clear();
     console.log(`Creating New Experiment: ${clientId}-${expId}_${varId}`);
     fse.copySync('./template', `./src/${clientId}/${expId}/${varId}/`);
     createFile('./process/activeExp.js', sharedJsContent(clientId, expId, varId));
