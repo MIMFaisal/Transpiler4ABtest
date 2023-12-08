@@ -71,7 +71,7 @@ async function createPrompt() {
     {
       type: 'autocomplete',
       name: 'variation',
-      message: 'Select an experiment to run:',
+      message: 'Select a variation to run:',
       source: async (answersSoFar, input) => {
         const filteredList = fuzzy.filter(input, getFiles(`./src/${answersSoFar.newClient || answersSoFar.client}/${answersSoFar.newExperiment || answersSoFar.experiment}`));
         let matches = filteredList.map((el) => el.original);
