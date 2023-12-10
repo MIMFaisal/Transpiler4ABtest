@@ -87,7 +87,7 @@ Copy below code in your UserJS/TemperMonkey
   }());
 })();
 ```
-# Snippet for update with page reload
+### Snippet for update with page reload
 ```
 // ==UserScript==
 // @name         TranspilerEsbuildReload
