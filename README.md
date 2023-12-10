@@ -41,7 +41,6 @@ Copy below code in your UserJS/TemperMonkey
   const ID = 'ABtest';
   const fType = {
     js: 'script',
-    bJs: 'script',
     css: 'style'
   };
 
@@ -102,7 +101,6 @@ Copy below code in your UserJS/TemperMonkey
   const ID = 'ABtest';
   const fType = {
     js: 'script',
-    bJs: 'script',
     css: 'style'
   };
 
