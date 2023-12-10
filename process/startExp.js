@@ -11,6 +11,8 @@ function startExp() {
   }, 1000);
 }
 
+console.clear();
+
 if (process.argv.includes('prev')) {
   if (fse.pathExistsSync('./process/activeExp.js')) {
     startExp();

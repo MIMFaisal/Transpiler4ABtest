@@ -7,7 +7,7 @@ import { SITE, ID, VAR } from '../process/activeExp.js';
 import siteLinks from '../process/siteLinks.js';
 
 const sourcePath = `./src/${SITE}/${ID}/${VAR}`;
-
+console.clear();
 async function serve() {
   const ctx = await esbuild.context({
     entryPoints: [`${sourcePath}/index.js`, `${sourcePath}/scss/index.scss`],
@@ -36,6 +36,7 @@ async function serve() {
     port: 3030
   });
 
+  console.log(`Experiment ${SITE}-${ID}_${VAR}`);
   console.log(`Serving on ${host}:${port}`);
 
   if (siteLinks[SITE]) {
