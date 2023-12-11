@@ -12,7 +12,6 @@ build({
   entryPoints: [`${sourcePath}/index.js`, `${sourcePath}/scss/index.scss`],
   entryNames: `${SITE}-${ID}_${VAR}`,
   bundle: true,
-  // outfile: `${paths.build}/${SITE}-${ID}_${VAR}.js`,
   outdir: `${buildPath}`,
   minify: false,
   sourcemap: false,
@@ -34,7 +33,14 @@ build({
   const style = document.createElement('style');
   style.classList.add('${SITE}-${ID}_${VAR}-css');
   style.innerHTML = \`${css.split('*/')[1]}\`;
-  document.head.appendChild(style);
+
+  (function poll(){
+    if (document.head) {
+      document.head.appendChild(style);
+    } else {
+      setTimeout(poll, 25);
+    }
+  }())
 })();
   `;
   fs.writeFileSync(`${buildPath}/${SITE}-${ID}_${VAR}.bundle.js`, cssTemplate, (err) => {

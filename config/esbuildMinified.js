@@ -11,7 +11,6 @@ build({
   entryPoints: [`${sourcePath}/index.js`, `${sourcePath}/scss/index.scss`],
   entryNames: `${SITE}-${ID}_${VAR}.min`,
   bundle: true,
-  // outfile: `${paths.build}/${SITE}-${ID}_${VAR}.js`,
   outdir: `${buildPath}`,
   minify: true,
   sourcemap: false,
