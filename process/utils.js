@@ -1,3 +1,4 @@
+/* eslint-disable */
 import enquirer from 'enquirer';
 import fse from 'fs-extra';
 import siteLinks from './siteLinks.js';
@@ -15,25 +16,20 @@ function getFiles(dir, files = []) {
 async function createInputPrompt(item) {
   const prompt = new enquirer.Input({
     message: `${item.includes('Link') ? 'Enter Link for auto redirection or Press Enter to continue' : `Enter ${item} ID:`}`,
-    name: item,
-    validate: (input) => {
-      if (input.length < 1 && !item.includes('Link')) {
-        return 'Please enter a valid ID';
-      }
-      return true;
-    }
+    name: item
   });
   try {
     const answer = await prompt.run();
     return answer;
   } catch (error) {
-    console.log('Exiting Program');
+    console.log('Exitting Program');
     process.exit(0);
   }
 }
 async function createAutocompletePrompt(files, item) {
   const fileList = [...files];
   fileList.push(`Create a New ${item}`);
+  item.includes('Client') ? fileList.push('Cancel') : fileList.push('Back');
   const prompt = new enquirer.AutoComplete({
     name: item,
     message: `Select a${item.includes('Experiment') ? 'n' : ''} ${item}:`,
@@ -45,37 +41,78 @@ async function createAutocompletePrompt(files, item) {
     const answer = await prompt.run();
     return answer;
   } catch (error) {
-    console.log('Exiting Program');
+    console.log('Exitting Program');
     process.exit(0);
   }
 }
-async function getPromptResult(list, item) {
-  let answer = '';
-  if (list.length > 0) {
-    answer = await createAutocompletePrompt(list, item);
-    if (answer.includes('Create')) {
-      answer = await createInputPrompt(item);
-    }
-  } else {
-    answer = await createInputPrompt(item);
-  }
-  return answer;
-}
 async function createPrompt() {
-  const clientList = getFiles('./src');
-  const clientId = await getPromptResult(clientList, 'Client');
-
-  const experimentList = getFiles(`./src/${clientId}`);
-  const expId = await getPromptResult(experimentList, 'Experiment');
-
-  const variationList = getFiles(`./src/${clientId}/${expId}`);
-  const varId = await getPromptResult(variationList, 'Variation');
-
+  let clientId = '';
+  let expId = '';
+  let varId = '';
   let siteLink = '';
-  if (siteLinks[clientId]) {
-    siteLink = siteLinks[clientId];
-  } else {
-    siteLink = await createInputPrompt('siteLink');
+  let exit = false;
+  let shouldAskClient = true;
+  let shouldAskExperiment = true;
+  let shouldAskVariation = true;
+  while (!exit) {
+    if (shouldAskClient) {
+      const clientList = getFiles('./src');
+      if (getFiles('./src').length > 0) {
+        clientId = await createAutocompletePrompt(clientList, 'Client');
+        if (clientId.includes('Create')) {
+          clientId = await createInputPrompt('Client');
+        }
+      } else if (!varId.includes('Back')) {
+        clientId = await createInputPrompt('Client');
+      }
+      if (clientId.includes('Cancel')) {
+        console.log('Exitting Program');
+        process.exit(0);
+      }
+      shouldAskClient = false;
+    }
+    if (shouldAskExperiment) {
+      const experimentList = getFiles(`./src/${clientId}`);
+      if (experimentList.length > 0 || varId.includes('Back')) {
+        expId = await createAutocompletePrompt(experimentList, 'Experiment');
+        if (expId.includes('Create')) {
+          expId = await createInputPrompt('Experiment');
+        }
+      } else {
+        expId = await createInputPrompt('Experiment');
+      }
+      if (expId.includes('Back')) {
+        shouldAskClient = true;
+        continue;
+      }
+      shouldAskExperiment = false;
+    }
+    if (shouldAskVariation) {
+      const variationList = getFiles(`./src/${clientId}/${expId}`);
+      if (variationList.length > 0) {
+        varId = await createAutocompletePrompt(variationList, 'Variation');
+        if (varId.includes('Create')) {
+          varId = await createInputPrompt('Variation');
+        }
+      } else {
+        varId = await createInputPrompt('Variation');
+      }
+      if (varId.includes('Back')) {
+        shouldAskExperiment = true;
+        continue;
+      }
+      shouldAskVariation = false;
+    }
+    if (siteLinks[clientId]) {
+      siteLink = siteLinks[clientId];
+    } else {
+      siteLink = await createInputPrompt('siteLink');
+    }
+
+    if (clientId && expId && varId) {
+      exit = true;
+      break;
+    }
   }
 
   if (clientId && expId && varId) {
@@ -86,7 +123,7 @@ async function createPrompt() {
       siteLink
     };
   }
-  console.log('Experiment not found ... exiting program');
+  console.log('Exitting Program');
   process.exit(0);
 }
 
