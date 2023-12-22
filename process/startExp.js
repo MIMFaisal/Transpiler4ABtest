@@ -38,7 +38,7 @@ if (process.argv.includes('prev')) {
     createFile('./process/activeExp.js', sharedJsContent(clientId, expId, varId));
   }
   if (siteLink) {
-    siteLinks[clientId] = siteLink;
+    siteLinks[`'${clientId}'`] = siteLink;
     createFile('./process/siteLinks.js', `const siteLinks = {\n${Object.keys(siteLinks).map((key) => `  ${key}: '${siteLinks[key]}',\n`).join('')}};\n\nexport default siteLinks;`);
   }
 
