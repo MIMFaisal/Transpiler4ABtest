@@ -15,7 +15,7 @@ function getFiles(dir, files = []) {
 }
 async function createInputPrompt(item) {
   const prompt = new enquirer.Input({
-    message: `${item.includes('Link') ? 'Enter Link for auto redirection or Press Enter to continue' : `Enter ${item} ID:`}`,
+    message: `${item.includes('Link') ? 'Enter Link for auto redirection or Press Enter to continue' : `Enter ${item} ${item.includes('Client') ? 'Name' : 'ID'}`}`,
     name: item
   });
   try {
@@ -46,7 +46,7 @@ async function createAutocompletePrompt(files, item) {
   }
 }
 async function createPrompt() {
-  let clientId = '';
+  let clientName = '';
   let expId = '';
   let varId = '';
   let siteLink = '';
@@ -58,21 +58,24 @@ async function createPrompt() {
     if (shouldAskClient) {
       const clientList = getFiles('./src');
       if (getFiles('./src').length > 0) {
-        clientId = await createAutocompletePrompt(clientList, 'Client');
-        if (clientId.includes('Create')) {
-          clientId = await createInputPrompt('Client');
+        clientName = await createAutocompletePrompt(clientList, 'Client');
+        if (clientName.includes('Create')) {
+          clientName = await createInputPrompt('Client');
         }
       } else if (!varId.includes('Back')) {
-        clientId = await createInputPrompt('Client');
+        clientName = await createInputPrompt('Client');
       }
-      if (clientId.includes('Cancel')) {
+      if (clientName.includes('Cancel')) {
         console.log('Exitting Program');
         process.exit(0);
+      } else if (clientName.length === 0) {
+        console.log('Please Enter a Valid Client Name');
+        continue;
       }
       shouldAskClient = false;
     }
     if (shouldAskExperiment) {
-      const experimentList = getFiles(`./src/${clientId}`);
+      const experimentList = getFiles(`./src/${clientName}`);
       if (experimentList.length > 0 || varId.includes('Back')) {
         expId = await createAutocompletePrompt(experimentList, 'Experiment');
         if (expId.includes('Create')) {
@@ -84,11 +87,14 @@ async function createPrompt() {
       if (expId.includes('Back')) {
         shouldAskClient = true;
         continue;
+      } else if (expId.length === 0) {
+        console.log('Please Enter a Valid Experiment ID');
+        continue;
       }
       shouldAskExperiment = false;
     }
     if (shouldAskVariation) {
-      const variationList = getFiles(`./src/${clientId}/${expId}`);
+      const variationList = getFiles(`./src/${clientName}/${expId}`);
       if (variationList.length > 0) {
         varId = await createAutocompletePrompt(variationList, 'Variation');
         if (varId.includes('Create')) {
@@ -100,24 +106,27 @@ async function createPrompt() {
       if (varId.includes('Back')) {
         shouldAskExperiment = true;
         continue;
+      } else if (varId.length === 0) {
+        console.log('Please Enter a Valid Variation ID');
+        continue;
       }
       shouldAskVariation = false;
     }
-    if (siteLinks[clientId]) {
-      siteLink = siteLinks[clientId];
+    if (siteLinks[clientName]) {
+      siteLink = siteLinks[clientName];
     } else {
       siteLink = await createInputPrompt('siteLink');
     }
 
-    if (clientId && expId && varId) {
+    if (clientName && expId && varId) {
       exit = true;
       break;
     }
   }
 
-  if (clientId && expId && varId) {
+  if (clientName && expId && varId) {
     return {
-      clientId,
+      clientName,
       expId,
       varId,
       siteLink

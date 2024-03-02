@@ -147,4 +147,4 @@ Copy below code in your UserJS/TemperMonkey
 ```
 
 DOM manipulation with multiple funtional change might not work with the `Snippet for live update without reload` and will require manual page reload.
-So it is better to create two different script for both type and activate/deactivate based on need.
+So it is better to create two different script for both type and activate/deactivate when needed.

@@ -8,6 +8,19 @@ import siteLinks from '../process/siteLinks.js';
 
 const sourcePath = `./src/${SITE}/${ID}/${VAR}`;
 console.clear();
+
+const rebuildPlugin = {
+  name: 'onrebuild',
+  setup(build) {
+    build.onEnd((result) => {
+      if (result.errors.length === 0 && result.warnings.length === 0) {
+        console.clear();
+      }
+      console.log(`build ended with ${result.errors.length} errors and ${result.warnings.length} warnings at ${new Date().toLocaleTimeString()}`);
+    });
+  }
+};
+
 async function serve() {
   const ctx = await esbuild.context({
     entryPoints: [`${sourcePath}/index.js`, `${sourcePath}/scss/index.scss`],
@@ -22,7 +35,8 @@ async function serve() {
           const { css } = await postcss([autoprefixer]).process(source, { from: undefined });
           return css;
         }
-      })
+      }),
+      rebuildPlugin
     ],
     treeShaking: true,
     charset: 'utf8'
@@ -36,7 +50,7 @@ async function serve() {
     port: 3030
   });
 
-  console.log(`Experiment ${SITE}-${ID}_${VAR}`);
+  console.log(`Experiment ${SITE}: ${ID}_${VAR}`);
   console.log(`Serving on ${host}:${port}`);
 
   if (siteLinks[SITE]) {

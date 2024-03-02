@@ -1,20 +1,20 @@
 import {
-  waitFor, q, qq, insert
+  poll, q, qq, insert
 } from '../../../../utils/common.js';
-import { EXPID, VAR, expLog } from './info.js';
+import { ID, VAR, expLog } from './info.js';
 
 window.runningExperiments = window.runningExperiments || {};
-window.runningExperiments[EXPID] = {
+window.runningExperiments[ID] = {
   name: '',
   variation: `${VAR}`,
   logs: []
 };
 
-waitFor(
+poll(
   () => q('body'),
   () => {
-    q('body').classList.add(`${EXPID}_${VAR}`);
-    expLog('RUNNING EXPERIMENT: ', EXPID, ' :: ', VAR);
+    q('body').classList.add(`${ID}_${VAR}`);
+    expLog('RUNNING EXPERIMENT: ', ID, ' :: ', VAR);
     expLog('TEST', q('body'));
   }
 );

@@ -22,23 +22,23 @@ if (process.argv.includes('prev')) {
 } else {
   fse.ensureDirSync('./src');
   const {
-    clientId, expId, varId, siteLink
+    clientName, expId, varId, siteLink
   } = await createPrompt();
 
-  fse.ensureDirSync(`./src/${clientId}/${expId}/${varId}`);
+  fse.ensureDirSync(`./src/${clientName}/${expId}/${varId}`);
 
-  if (!fse.pathExistsSync(`./src/${clientId}/${expId}/${varId}/index.js`)) {
+  if (!fse.pathExistsSync(`./src/${clientName}/${expId}/${varId}/index.js`)) {
     console.clear();
-    console.log(`Creating New Experiment: ${clientId}-${expId}_${varId}`);
-    fse.copySync('./template', `./src/${clientId}/${expId}/${varId}/`);
-    createFile('./process/activeExp.js', sharedJsContent(clientId, expId, varId));
-    createFile(`./src/${clientId}/${expId}/${varId}/info.js`, `${sharedJsContent(clientId, expId, varId)}export const EXPID = '${clientId}-${expId}';\n\nexport function expLog() {\n  window.runningExperiments[EXPID].logs.push([...arguments]);\n  console.debug(...arguments);\n}`);
-    createFile(`./src/${clientId}/${expId}/${varId}/scss/components/_info.scss`, `$ID: '${clientId}-${expId}';\n$variation-name: '${varId}';`);
+    console.log(`Creating New Experiment For ${clientName}: ${expId}_${varId}`);
+    fse.copySync('./template', `./src/${clientName}/${expId}/${varId}/`);
+    createFile('./process/activeExp.js', sharedJsContent(clientName, expId, varId));
+    createFile(`./src/${clientName}/${expId}/${varId}/info.js`, `${sharedJsContent(clientName, expId, varId)}\nexport function expLog() {\n  window.runningExperiments[ID].logs.push([...arguments]);\n  console.debug(...arguments);\n}`);
+    createFile(`./src/${clientName}/${expId}/${varId}/scss/components/_info.scss`, `$ID: '${expId}';\n$variation-name: '${varId}';`);
   } else {
-    createFile('./process/activeExp.js', sharedJsContent(clientId, expId, varId));
+    createFile('./process/activeExp.js', sharedJsContent(clientName, expId, varId));
   }
   if (siteLink) {
-    siteLinks[clientId] = siteLink;
+    siteLinks[clientName] = siteLink;
     createFile('./process/siteLinks.js', `const siteLinks = {\n${Object.keys(siteLinks).map((key) => `  '${key}': '${siteLinks[key]}',\n`).join('')}};\n\nexport default siteLinks;`);
   }
 

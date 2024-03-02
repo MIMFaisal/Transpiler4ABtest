@@ -10,28 +10,26 @@ const buildPath = `${sourcePath}/build`;
 
 build({
   entryPoints: [`${sourcePath}/index.js`, `${sourcePath}/scss/index.scss`],
-  entryNames: `${SITE}-${ID}_${VAR}`,
+  entryNames: `${ID}_${VAR}`,
   bundle: true,
   outdir: `${buildPath}`,
   minify: false,
   sourcemap: false,
-  plugins: [
-    sassPlugin({
-      async transform(source) {
-        const { css } = await postcss([autoprefixer]).process(source, { from: undefined });
-        return css;
-      }
-    })
-  ],
+  plugins: [sassPlugin({
+    async transform(source) {
+      const { css } = await postcss([autoprefixer({ flexbox: 'no-2009', grid: 'no-autoplace' })]).process(source, { from: undefined });
+      return css;
+    }
+  })],
   treeShaking: true,
   charset: 'utf8',
   target: ['es2016']
 }).then(() => {
-  const css = fs.readFileSync(`${buildPath}/${SITE}-${ID}_${VAR}.css`, 'utf8');
+  const css = fs.readFileSync(`${buildPath}/${ID}_${VAR}.css`, 'utf8');
 
   const cssTemplate = `(() => {
   const style = document.createElement('style');
-  style.classList.add('${SITE}-${ID}_${VAR}-css');
+  style.classList.add('${ID}_${VAR}-css');
   style.innerHTML = \`${css.split('*/')[1]}\`;
 
   (function poll(){
@@ -43,13 +41,13 @@ build({
   }())
 })();
   `;
-  fs.writeFileSync(`${buildPath}/${SITE}-${ID}_${VAR}.bundle.js`, cssTemplate, (err) => {
+  fs.writeFileSync(`${buildPath}/${ID}_${VAR}.bundle.js`, cssTemplate, (err) => {
     if (err) throw err;
   });
 
-  const buildjs = fs.readFileSync(`${buildPath}/${SITE}-${ID}_${VAR}.js`, 'utf8');
+  const buildjs = fs.readFileSync(`${buildPath}/${ID}_${VAR}.js`, 'utf8');
 
-  fs.appendFile(`${buildPath}//${SITE}-${ID}_${VAR}.bundle.js`, buildjs, (err) => {
+  fs.appendFile(`${buildPath}/${ID}_${VAR}.bundle.js`, buildjs, (err) => {
     if (err) throw err;
     console.log('Bundle file is created successfully.');
   });
