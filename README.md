@@ -23,7 +23,7 @@ npm run build
 
 ## Connect experiment with the site
 
-Copy below code in your UserJS/TemperMonkey
+Copy ths code snippet provided below in UserJS/TemperMonkey.
 
 ### Snippet for live update without reload
 
@@ -148,3 +148,5 @@ Copy below code in your UserJS/TemperMonkey
 
 DOM manipulation with multiple funtional change might not work with the `Snippet for live update without reload` and will require manual page reload.
 So it is better to create two different script for both type and activate/deactivate when needed.
+
+Some sites may have Content security policy enabled which will prevent any script injection from unauthorized external source. Use a extension that can disable content security policy in that case during development. 
