@@ -45,15 +45,34 @@ async function createAutocompletePrompt(files, item) {
     process.exit(0);
   }
 }
+
+async function createTemplatePrompt() {
+  const prompt = new enquirer.Select({
+    name: 'template',
+    message: 'Choose a template:',
+    choices: fse.readdirSync('./template'),
+  });
+
+  try {
+    const answer = await prompt.run();
+    return answer;
+  } catch (error) {
+    console.log('Exiting Program');
+    process.exit(0);
+  }
+}
+
 async function createPrompt() {
   let clientName = '';
   let expId = '';
   let varId = '';
   let siteLink = '';
+  let template = 'default';
   let exit = false;
   let shouldAskClient = true;
   let shouldAskExperiment = true;
   let shouldAskVariation = true;
+  let shouldAskTemplate = false;
   while (!exit) {
     if (shouldAskClient) {
       const clientList = getFiles('./src');
@@ -98,9 +117,11 @@ async function createPrompt() {
       if (variationList.length > 0) {
         varId = await createAutocompletePrompt(variationList, 'Variation');
         if (varId.includes('Create')) {
+          shouldAskTemplate = true;
           varId = await createInputPrompt('Variation');
         }
       } else {
+        shouldAskTemplate = true;
         varId = await createInputPrompt('Variation');
       }
       if (varId.includes('Back')) {
@@ -112,6 +133,12 @@ async function createPrompt() {
       }
       shouldAskVariation = false;
     }
+
+    if (shouldAskTemplate) {
+      template = await createTemplatePrompt();
+      shouldAskTemplate = false;
+    }
+
     if (siteLinks[clientName]) {
       siteLink = siteLinks[clientName];
     } else {
@@ -129,7 +156,8 @@ async function createPrompt() {
       clientName,
       expId,
       varId,
-      siteLink
+      siteLink,
+      template
     };
   }
   console.log('Exitting Program');

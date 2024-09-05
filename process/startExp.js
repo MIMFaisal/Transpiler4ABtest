@@ -22,7 +22,7 @@ if (process.argv.includes('prev')) {
 } else {
   fse.ensureDirSync('./src');
   const {
-    clientName, expId, varId, siteLink
+    clientName, expId, varId, siteLink, template
   } = await createPrompt();
 
   fse.ensureDirSync(`./src/${clientName}/${expId}/${varId}`);
@@ -30,7 +30,7 @@ if (process.argv.includes('prev')) {
   if (!fse.pathExistsSync(`./src/${clientName}/${expId}/${varId}/index.js`)) {
     console.clear();
     console.log(`Creating New Experiment For ${clientName}: ${expId}_${varId}`);
-    fse.copySync('./template', `./src/${clientName}/${expId}/${varId}/`);
+    fse.copySync(`./template/${template}`, `./src/${clientName}/${expId}/${varId}/`);
     createFile('./process/activeExp.js', sharedJsContent(clientName, expId, varId));
     createFile(`./src/${clientName}/${expId}/${varId}/info.js`, `${sharedJsContent(clientName, expId, varId)}\nexport function expLog() {\n  window.runningExperiments[ID].logs.push([...arguments]);\n  console.debug(...arguments);\n}`);
     createFile(`./src/${clientName}/${expId}/${varId}/scss/components/_info.scss`, `$ID: '${expId}';\n$variation-name: '${varId}';`);
