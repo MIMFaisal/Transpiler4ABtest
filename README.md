@@ -14,7 +14,6 @@ npm i
 npm start
 ```
 
-
 ## Build the experiment
 
 ```
@@ -86,7 +85,9 @@ Copy ths code snippet provided below in UserJS/TemperMonkey.
   }());
 })();
 ```
+
 ### Snippet for update with page reload
+
 ```
 // ==UserScript==
 // @name         TranspilerEsbuildReload
@@ -149,4 +150,27 @@ Copy ths code snippet provided below in UserJS/TemperMonkey.
 DOM manipulation with multiple funtional change might not work with the `Snippet for live update without reload` and will require manual page reload.
 So it is better to create two different script for both type and activate/deactivate when needed.
 
-Some sites may have Content security policy enabled which will prevent any script injection from unauthorized external source. Use a extension that can disable content security policy in that case during development. 
+Some sites may have Content security policy enabled which will prevent any script injection from unauthorized external source. Use a extension that can disable content security policy in that case during development.
+
+## Template Support
+
+To create a separate template for your project. Just copy the default folder inside the `template` folder. Rename it to your needs and it should automatically show it as a template when create a project.
+
+Updated template folder should look like the following
+
+```
+template
+────default
+│   │   index.js
+│   │   info.js
+│   │
+│   └───scss
+│       │   ...
+│
+└───yourTemplate
+    │   index.js
+    │   info.js
+    │
+    └───scss
+        │   ...
+```
