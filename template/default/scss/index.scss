@@ -1,5 +1,5 @@
-@import './components/info';
-@import './components/mixin';
+@use './components/info' as *;
+@use './components/mixin'  as *;
 
 .#{$ID} {
   &-content {
