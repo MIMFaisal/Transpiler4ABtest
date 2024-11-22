@@ -33,13 +33,13 @@ if (process.argv.includes('prev')) {
     fse.copySync(`./template/${template}`, `./src/${clientName}/${expId}/${varId}/`);
     createFile('./process/activeExp.js', sharedJsContent(clientName, expId, varId));
     createFile(`./src/${clientName}/${expId}/${varId}/info.js`, `${sharedJsContent(clientName, expId, varId)}\nexport function expLog() {\n  window.runningExperiments[ID].logs.push([...arguments]);\n  console.debug(...arguments);\n}`);
-    createFile(`./src/${clientName}/${expId}/${varId}/scss/components/_info.scss`, `$ID: '${expId}';\n$variation-name: '${varId}';`);
+    createFile(`./src/${clientName}/${expId}/${varId}/scss/components/_info.scss`, `$ID: "${expId}";\n$variation-name: "${varId}";`);
   } else {
     createFile('./process/activeExp.js', sharedJsContent(clientName, expId, varId));
   }
   if (siteLink) {
     siteLinks[clientName] = siteLink;
-    createFile('./process/siteLinks.js', `const siteLinks = {\n${Object.keys(siteLinks).map((key) => `  '${key}': '${siteLinks[key]}',\n`).join('')}};\n\nexport default siteLinks;`);
+    createFile('./process/siteLinks.js', `const siteLinks = {\n${Object.keys(siteLinks).map((key) => `  "${key}": "${siteLinks[key]}",\n`).join('')}};\n\nexport default siteLinks;`);
   }
 
   startExp();

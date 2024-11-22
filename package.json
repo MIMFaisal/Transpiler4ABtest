@@ -15,11 +15,11 @@
   "dependencies": {
     "autoprefixer": "^10.4.16",
     "enquirer": "^2.4.1",
-    "esbuild": "^0.19.8",
-    "esbuild-sass-plugin": "^2.16.0",
+    "esbuild": "^0.19.12",
+    "esbuild-sass-plugin": "^2.16.1",
     "fs-extra": "^11.2.0",
     "open": "^9.1.0",
-    "postcss": "^8.4.32"
+    "postcss": "^8.4.49"
   },
   "devDependencies": {
     "eslint": "^8.55.0",
