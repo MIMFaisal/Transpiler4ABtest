@@ -1,4 +1,5 @@
 import esbuild from 'esbuild';
+import fs from 'fs';
 import { sassPlugin } from 'esbuild-sass-plugin';
 import postcss from 'postcss';
 import autoprefixer from 'autoprefixer';
@@ -17,6 +18,7 @@ const rebuildPlugin = {
         console.clear();
       }
       console.log(`build ended with ${result.errors.length} errors and ${result.warnings.length} warnings at ${new Date().toLocaleTimeString()}`);
+      fs.appendFileSync('./www/index.js', `\n//last updated on: ${new Date().toLocaleTimeString()}\n//# sourceURL=ABtest/${ID}_${VAR}.js`);
     });
   }
 };

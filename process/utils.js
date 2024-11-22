@@ -50,7 +50,7 @@ async function createTemplatePrompt() {
   const prompt = new enquirer.Select({
     name: 'template',
     message: 'Choose a template:',
-    choices: fse.readdirSync('./template'),
+    choices: fse.readdirSync('./template')
   });
 
   try {
@@ -164,9 +164,9 @@ async function createPrompt() {
   process.exit(0);
 }
 
-const sharedJsContent = (siteName, experimentId, variationName) => `export const SITE = '${siteName}';
-export const ID = '${experimentId}';
-export const VAR = '${variationName}';
+const sharedJsContent = (siteName, experimentId, variationName) => `export const SITE = "${siteName}";
+export const ID = "${experimentId}";
+export const VAR = "${variationName}";
 `;
 
 const createFile = (location, content) => {

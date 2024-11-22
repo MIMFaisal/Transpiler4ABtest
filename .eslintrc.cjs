@@ -45,6 +45,6 @@ module.exports = {
       }
     ],
     'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
-    quotes: ['error', 'single', { avoidEscape: true }]
+    quotes: ['error', 'single', { avoidEscape: true, allowTemplateLiterals: true }]
   }
 };

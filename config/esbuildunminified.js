@@ -25,6 +25,7 @@ build({
   charset: 'utf8',
   target: ['es2016']
 }).then(() => {
+  fs.appendFileSync(`${buildPath}/${ID}_${VAR}.js`, `\n//# sourceURL=ABtest/${ID}_${VAR}.js`);
   const css = fs.readFileSync(`${buildPath}/${ID}_${VAR}.css`, 'utf8');
 
   const cssTemplate = `(() => {
